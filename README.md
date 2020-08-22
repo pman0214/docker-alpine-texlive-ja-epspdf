@@ -27,7 +27,8 @@ docker pull pman0214/alpine-texlive-ja-epspdf
 Default ``WORKDIR`` is ``/workdir``.
 
 ```bash
-docker run --rm -it -v $PWD:/workdir pman0214/alpine-texlive-ja-epspdf 'latexmk -C main.tex && latexmk main.tex'
+docker run --rm -v $PWD:/workdir pman0214/alpine-texlive-ja-epspdf latexmk -C main.tex
+docker run --rm -v $PWD:/workdir pman0214/alpine-texlive-ja-epspdf latexmk main.tex
 ```
 
 ## Contribute
