@@ -22,7 +22,7 @@ RUN cd / && \
     /usr/glibc-compat/sbin/ldconfig && \
     /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 "${LANG}" || true && \
     echo "export LANG=${LANG}" > /etc/profile.d/locale.sh && \
-    apk add --no-cache perl fontconfig-dev freetype-dev && \
+    apk add --no-cache perl fontconfig-dev freetype-dev ghostscript && \
     apk add --no-cache --virtual .fetch-deps xz tar && \
     mkdir /tmp/install-tl-unx && \
     wget ftp://tug.org/historic/systems/texlive/${TEXLIVE_VER}/install-tl-unx.tar.gz -O - | \
@@ -35,8 +35,6 @@ RUN cd / && \
     > /tmp/install-tl-unx/texlive.profile && \
     /tmp/install-tl-unx/install-tl \
       --profile=/tmp/install-tl-unx/texlive.profile && \
-    mkdir -p /usr/local/share/gs && \
-    apk install ghostscript && \
     tlmgr install \
       collection-latexextra \
       collection-fontsrecommended \
