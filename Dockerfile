@@ -44,9 +44,9 @@ RUN set -x && \
       collection-langjapanese \
       epstopdf \
       latexmk && \
+    apk del --purge .fetch-deps && \
     rm -rf /tmp/install-tl-unx && \
     rm -rf /var/cache/apk && \
-    apk del --purge .fetch-deps && \
     mkdir /var/cache/apk
 
 WORKDIR /app
