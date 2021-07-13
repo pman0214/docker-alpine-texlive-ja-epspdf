@@ -11,12 +11,14 @@ ARG TEXLIVE_VER=2021
 ENV PATH=/usr/local/texlive/${TEXLIVE_VER}/bin/${ARCH}-linuxmusl:$PATH
 ENV LANG=C.UTF-8
 
-COPY files /tmp/
+COPY files /tmp/files
 
-RUN cd / && \
+RUN set -x && \
+    cd / && \
     apk update && \
+    apk add --no-cache --virtual .fetch-deps xz tar && \
     apk add --no-cache perl fontconfig-dev freetype-dev ghostscript && \
-    wget https://github.com/pman0214/docker-glibc-builder/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-${ARCH}.tar.gz -O - | \
+    curl -L https://github.com/pman0214/docker-glibc-builder/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-${ARCH}.tar.gz | \
     tar zx && \
     mkdir -p /lib /lib64 /usr/glibc-compat/lib/locale  /usr/glibc-compat/lib64 /etc && \
     cp /tmp/files/ld.so.conf /usr/glibc-compat/etc/ && \
@@ -26,7 +28,7 @@ RUN cd / && \
     /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 "${LANG}" || true && \
     echo "export LANG=${LANG}" > /etc/profile.d/locale.sh && \
     mkdir /tmp/install-tl-unx && \
-    wget ftp://tug.org/historic/systems/texlive/${TEXLIVE_VER}/install-tl-unx.tar.gz -O - | \
+    curl -L ftp://tug.org/historic/systems/texlive/${TEXLIVE_VER}/install-tl-unx.tar.gz | \
     tar zx -C /tmp/install-tl-unx --strip-components=1 && \
     printf "%s\n" \
       "selected_scheme scheme-basic" \
@@ -44,6 +46,7 @@ RUN cd / && \
       latexmk && \
     rm -rf /tmp/install-tl-unx && \
     rm -rf /var/cache/apk && \
+    apk del --purge .fetch-deps && \
     mkdir /var/cache/apk
 
 WORKDIR /app
