@@ -16,7 +16,7 @@ COPY files /tmp/files
 RUN set -x && \
     cd / && \
     apk update && \
-    apk add --no-cache --virtual .fetch-deps xz tar && \
+    apk add --no-cache --virtual .fetch-deps curl xz tar && \
     apk add --no-cache perl fontconfig-dev freetype-dev ghostscript && \
     curl -L https://github.com/pman0214/docker-glibc-builder/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-${ARCH}.tar.gz | \
     tar zx && \
