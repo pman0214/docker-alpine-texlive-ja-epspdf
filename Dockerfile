@@ -6,7 +6,6 @@ FROM alpine:3.13
 
 ARG ARCH=x86_64
 ARG GLIBC_VER=2.33
-ARG GS_VER=9.54.0
 ARG TEXLIVE_VER=2021
 
 ENV PATH=/usr/local/texlive/${TEXLIVE_VER}/bin/${ARCH}-linuxmusl:$PATH
