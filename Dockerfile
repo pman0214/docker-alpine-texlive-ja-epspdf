@@ -16,7 +16,7 @@ COPY files /tmp/
 RUN cd / && \
     apk update && \
     apk add --no-cache perl fontconfig-dev freetype-dev ghostscript && \
-    wget https://github.com/pman0214/docker-glibc-builder/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-${ARCH}.tar.gz -O - | \\
+    wget https://github.com/pman0214/docker-glibc-builder/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-${ARCH}.tar.gz -O - | \
     tar zx && \
     mkdir -p /lib /lib64 /usr/glibc-compat/lib/locale  /usr/glibc-compat/lib64 /etc && \
     cp /tmp/files/ld.so.conf /usr/glibc-compat/etc/ && \
