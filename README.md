@@ -14,6 +14,7 @@ Note that this repository is UNDER DEVELOPMENT!
 
 - [Install](#install)
 - [Usage](#usage)
+- [Building](#building)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -31,6 +32,27 @@ Default ``WORKDIR`` is ``/app``.
 docker run --rm -v $PWD:/app pman0214/alpine-texlive-ja-epspdf latexmk -C main.tex
 docker run --rm -v $PWD:/app pman0214/alpine-texlive-ja-epspdf latexmk main.tex
 ```
+
+## Building
+
+If you want to build this image by yourself, please prepare for a multi-architecture builder referring to the [official documents](https://docs.docker.com/desktop/multi-arch/).
+```bash
+docker run --privileged --rm tonistiigi/binfmt --uninstall "qemu-*"
+docker run --privileged --rm tonistiigi/binfmt --install all
+docker buildx create --name multiarch --driver docker-container
+docker buildx use multiarch
+docker buildx inspect --bootstrap
+```
+In this example, `multiarch` is the name of the multi-architecture builder.
+
+You can build this image with your own multi-architecture builder.
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t "pman0214/alpine-texlive-ja-epspdf" \
+  . --load
+```
+``--push`` instead of `--load` with appropriate tag name pushes built images to GitHub.
 
 ## Contribute
 
