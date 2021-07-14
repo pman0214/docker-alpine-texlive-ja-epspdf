@@ -63,7 +63,7 @@ RUN set -x && \
       epstopdf \
       latexmk && \
     echo "export PATH=/usr/local/texlive/${TEXLIVE_VER}/bin/$(arch)-linux:$PATH" >> \
-      /etc/profile.d/texlive_path.sh && \
+      /etc/profile && \
     apk del --purge .fetch-deps && \
     apk del --purge .glibc-bin-deps && \
     rm -rf /tmp/files && \
