@@ -9,6 +9,7 @@ ARG TEXLIVE_VER=2021
 
 ENV LANG=C.UTF-8
 ENV GLIBC_URL_BASE=https://github.com/pman0214/docker-glibc-builder/releases/download
+ENV PATH=/usr/local/texlive/${TEXLIVE_VER}/bin/x86_64-linux:/usr/local/texlive/${TEXLIVE_VER}/bin/aarch64-linux:$PATH
 
 COPY files /tmp/files
 
@@ -46,7 +47,6 @@ RUN set -x && \
     mkdir /tmp/install-tl-unx && \
     curl -L ftp://tug.org/historic/systems/texlive/${TEXLIVE_VER}/install-tl-unx.tar.gz | \
       tar zx -C /tmp/install-tl-unx --strip-components=1 && \
-    export PATH=/usr/local/texlive/${TEXLIVE_VER}/bin/$(arch)-linux:$PATH && \
     { \
       echo "selected_scheme scheme-basic"; \
       echo "tlpdbopt_install_docfiles 0"; \
@@ -62,8 +62,6 @@ RUN set -x && \
       collection-langjapanese \
       epstopdf \
       latexmk && \
-    echo "export PATH=/usr/local/texlive/${TEXLIVE_VER}/bin/$(arch)-linux:$PATH" >> \
-      /etc/profile && \
     apk del --purge .fetch-deps && \
     apk del --purge .glibc-bin-deps && \
     rm -rf /tmp/files && \
