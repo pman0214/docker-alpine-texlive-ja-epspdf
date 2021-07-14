@@ -8,8 +8,6 @@ Inspired by [paperist/alpine-texlive-ja] \(under the MIT License\).
 
 [paperist/alpine-texlive-ja]: https://github.com/Paperist/docker-alpine-texlive-ja
 
-Note that this repository is UNDER DEVELOPMENT!
-
 ## Table of Contents
 
 - [Install](#install)
@@ -26,7 +24,7 @@ docker pull pman0214/alpine-texlive-ja-epspdf
 
 ## Usage
 
-Default ``WORKDIR`` is ``/app``.
+Default `WORKDIR` is `/app`.
 
 ```bash
 docker run --rm -v $PWD:/app pman0214/alpine-texlive-ja-epspdf latexmk -C main.tex
@@ -49,10 +47,10 @@ You can build this image with your own multi-architecture builder.
 ```bash
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t "pman0214/alpine-texlive-ja-epspdf" \
+  -t "alpine-texlive-ja-epspdf" \
   . --load
 ```
-``--push`` instead of `--load` with appropriate tag name pushes built images to GitHub.
+`--push` option instead of `--load` with appropriate tag pushes built images to GitHub.
 
 ## Contribute
 
@@ -60,6 +58,6 @@ docker buildx build \
 
 ## License
 
-All the source files are released under the MIT license. See ``LICENSE.txt``.
+All the source files are released under the MIT license. See `LICENSE.txt`.
 
 * Copyright (c) 2021 Shigemi ISHIDA
