@@ -2,10 +2,8 @@
 # Released under the MIT license
 # https://opensource.org/licenses/MIT
 
-FROM --platform=$BUILDPLATFORM alpine:3.13
+FROM alpine:3.13
 
-ARG BUILDPLATFORM
-ARG TARGETPLATFORM
 ARG GLIBC_VER=2.33
 ARG TEXLIVE_VER=2021
 
