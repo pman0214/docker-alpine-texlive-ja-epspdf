@@ -1,0 +1,58 @@
+name: docker multi-arch build
+
+permissions:
+  contents: write
+
+on:
+  workflow-dispatch:
+  push:
+    tags:
+      - '[0-9]*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get latest tag
+        id: latest_tag
+        run: |
+          echo "$(git describe --tags --abbrev=0)" > TAG
+          echo "tag=$(cat TAG)" >> $GITHUB_OUTPUT
+      - name: Checkout latest tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.latest_tag.tag }}
+      - name: Setup qemu
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+      - name: Setup docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+      - name: Login to docker hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set docker metadata
+        id: docker_metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            pman0214/alpine-texlive-ja-epspdf
+          tags: |
+            type=ref,event=tag
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.docker_metadata.outputs.tags }}
+          labels: ${{ steps.docker_metadata.outputs.labels }}
