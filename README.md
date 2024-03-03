@@ -60,4 +60,4 @@ docker buildx build \
 
 All the source files are released under the MIT license. See `LICENSE.txt`.
 
-* Copyright (c) 2021 Shigemi ISHIDA
+* Copyright (c) 2021-2024 Shigemi ISHIDA

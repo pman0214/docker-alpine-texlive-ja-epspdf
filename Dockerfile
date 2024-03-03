@@ -1,11 +1,11 @@
-# Copyright (c) 2021 Shigemi ISHIDA
+# Copyright (c) 2021-2024 Shigemi ISHIDA
 # Released under the MIT license
 # https://opensource.org/licenses/MIT
 
-FROM alpine:3.13
+FROM alpine:3.19
 
-ARG GLIBC_VER=2.33
-ARG TEXLIVE_VER=2021
+ARG GLIBC_VER=2.36
+ARG TEXLIVE_VER=2023
 
 ENV LANG=C.UTF-8
 ENV GLIBC_URL_BASE=https://github.com/pman0214/docker-glibc-builder/releases/download
@@ -19,7 +19,9 @@ RUN set -x && \
     apk add --no-cache --virtual .fetch-deps curl xz && \
     apk add --no-cache --virtual .glibc-bin-deps libgcc && \
     apk add --no-cache perl fontconfig-dev freetype-dev ghostscript && \
-    curl -L ${GLIBC_URL_BASE}/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-$(arch).tar.gz | \
+    ARCH=$(arch) && \
+    if [ ${ARCH} = "aarch64" ]; then ARCH="arm64" ; fi && \
+    curl -L ${GLIBC_URL_BASE}/${GLIBC_VER}/glibc-bin-${GLIBC_VER}-${ARCH}.tar.gz | \
       tar zx -C / && \
     mkdir -p /lib64 /usr/glibc-compat/lib/locale /usr/glibc-compat/lib64 && \
     cp /tmp/files/ld.so.conf /usr/glibc-compat/etc/ && \
@@ -51,11 +53,20 @@ RUN set -x && \
       echo "selected_scheme scheme-basic"; \
       echo "tlpdbopt_install_docfiles 0"; \
       echo "tlpdbopt_install_srcfiles 0"; \
-      echo "binary_$(arch)-linuxmusl 0"; \
-      echo "binary_$(arch)-linux 1"; \
-     } | tee /tmp/install-tl-unx/texlive.profile && \
-    /tmp/install-tl-unx/install-tl \
-      --profile=/tmp/install-tl-unx/texlive.profile && \
+      if [ ${ARCH} = "arm64" ]; then \
+        echo "binary_aarch64-linux 1"; \
+      else \
+        echo "binary_x86_64-linuxmusl 0"; \
+        echo "binary_x86_64-linux 1"; \
+      fi \
+    } | tee -a /tmp/install-tl-unx/texlive.profile && \
+    i=5; \
+    while [ $i -gt 0 ]; do \
+      /tmp/install-tl-unx/install-tl \
+        --profile=/tmp/install-tl-unx/texlive.profile && break; \
+      sleep 60 ; \
+      i=$(expr $i - 1); \
+    done && \
     tlmgr install \
       collection-latexextra \
       collection-fontsrecommended \
