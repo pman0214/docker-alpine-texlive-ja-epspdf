@@ -8,6 +8,9 @@ Inspired by [paperist/alpine-texlive-ja] \(under the MIT License\).
 
 [paperist/alpine-texlive-ja]: https://github.com/Paperist/docker-alpine-texlive-ja
 
+Source code is available [on GitHub](https://github.com/pman0214/docker-alpine-texlive-ja-epspdf/).
+Docker images are available for x86_64 (amd64) and aarch64 (arm64) [on Docker Hub](https://hub.docker.com/r/pman0214/alpine-texlive-ja-epspdf/), which are automatically built with GitHub Actions.
+
 ## Table of Contents
 
 - [Install](#install)
