@@ -60,19 +60,24 @@ RUN set -x && \
         echo "binary_x86_64-linux 1"; \
       fi \
     } | tee -a /tmp/install-tl-unx/texlive.profile && \
-    i=5; \
+    i=10; \
     while [ $i -gt 0 ]; do \
       /tmp/install-tl-unx/install-tl \
         --profile=/tmp/install-tl-unx/texlive.profile && break; \
-      sleep 60 ; \
+      sleep 30; \
       i=$(expr $i - 1); \
     done && \
-    tlmgr install \
-      collection-latexextra \
-      collection-fontsrecommended \
-      collection-langjapanese \
-      epstopdf \
-      latexmk && \
+    i=10; \
+    while [ $i -gt 0 ]; do \
+      tlmgr install \
+        collection-latexextra \
+        collection-fontsrecommended \
+        collection-langjapanese \
+        epstopdf \
+        latexmk && break; \
+      sleep 30; \
+      i=$(expr $i - 1); \
+    done && \
     apk del --purge .fetch-deps && \
     apk del --purge .glibc-bin-deps && \
     rm -rf /tmp/files && \
