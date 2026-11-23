@@ -55,6 +55,16 @@ docker buildx build \
 ```
 `--push` option instead of `--load` with appropriate tag pushes built images to GitHub.
 
+To install additional TeX Live packages, pass them with the `TEXLIVE_EXTRA` build argument.
+For example, to install `newtx`:
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  --build-arg TEXLIVE_EXTRA="newtx" \
+  -t "alpine-texlive-ja-epspdf" \
+  . --load
+```
+
 ## Contribute
 
 * Bugfix pull requests are welcome.
