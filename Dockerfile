@@ -65,6 +65,10 @@ RUN set -x && \
     while [ $i -gt 0 ]; do \
       /tmp/install-tl-unx/install-tl \
         --profile=/tmp/install-tl-unx/texlive.profile && break; \
+      if [ "$i" -eq 1 ]; then \
+        echo "TeX Live installation failed after 10 attempts" >&2; \
+        exit 1; \
+      fi; \
       sleep 30; \
       i=$(expr $i - 1); \
     done && \
@@ -77,6 +81,10 @@ RUN set -x && \
         epstopdf \
         ${TEXLIVE_EXTRA} \
         latexmk && break; \
+      if [ "$i" -eq 1 ]; then \
+        echo "TeX Live package installation failed after 10 attempts" >&2; \
+        exit 1; \
+      fi; \
       sleep 30; \
       i=$(expr $i - 1); \
     done && \
