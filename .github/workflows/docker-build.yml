@@ -1,7 +1,7 @@
 name: docker multi-arch build
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   workflow_dispatch:
@@ -12,20 +12,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suffix: ''
+            extra: ''
+          - suffix: '_newtx'
+            extra: 'newtx'
+
     steps:
+      - name: Validate tag
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ "$REF_TYPE" != "tag" ]] ||
+             [[ ! "$TAG" =~ ^[0-9][a-zA-Z0-9_.-]*$ ]] ||
+             [[ ${#TAG} -gt 122 ]]; then
+             echo "Select a valid numeric-prefixed git tag (max 122 characters)." >&2
+             exit 1
+          fi
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Get latest tag
-        id: latest_tag
+      - name: Find latest year tag
+        id: latest
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
-          echo "$(git describe --tags --abbrev=0)" > TAG
-          echo "tag=$(cat TAG)" >> $GITHUB_OUTPUT
-      - name: Checkout latest tag
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.latest_tag.tag }}
+          latest=$(git tag --list | grep -E '^[0-9]{4}$' | sort -n | tail -n 1)
+          if [[ -n "$latest" && "$TAG" == "$latest" ]]; then
+            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Setup qemu
         uses: docker/setup-qemu-action@v3
         with:
@@ -40,19 +62,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Set docker metadata
-        id: docker_metadata
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            pman0214/alpine-texlive-ja-epspdf
-          tags: |
-            type=ref,event=tag
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.docker_metadata.outputs.tags }}
-          labels: ${{ steps.docker_metadata.outputs.labels }}
+          build-args: |
+            TEXLIVE_EXTRA=${{ matrix.extra }}
+          tags: |
+            pman0214/alpine-texlive-ja-epspdf:${{ github.ref_name }}${{ matrix.suffix }}
+            ${{ steps.latest.outputs.is_latest == 'true' && matrix.suffix == '' && 'pman0214/alpine-texlive-ja-epspdf:latest' || '' }}

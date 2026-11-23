@@ -5,7 +5,8 @@
 FROM alpine:3.19
 
 ARG GLIBC_VER=2.36
-ARG TEXLIVE_VER=2025
+ARG TEXLIVE_VER=2026
+ARG TEXLIVE_EXTRA=
 
 ENV LANG=C.UTF-8
 ENV GLIBC_URL_BASE=https://github.com/pman0214/docker-glibc-builder/releases/download
@@ -64,6 +65,10 @@ RUN set -x && \
     while [ $i -gt 0 ]; do \
       /tmp/install-tl-unx/install-tl \
         --profile=/tmp/install-tl-unx/texlive.profile && break; \
+      if [ "$i" -eq 1 ]; then \
+        echo "TeX Live installation failed after 10 attempts" >&2; \
+        exit 1; \
+      fi; \
       sleep 30; \
       i=$(expr $i - 1); \
     done && \
@@ -74,7 +79,12 @@ RUN set -x && \
         collection-fontsrecommended \
         collection-langjapanese \
         epstopdf \
+        ${TEXLIVE_EXTRA} \
         latexmk && break; \
+      if [ "$i" -eq 1 ]; then \
+        echo "TeX Live package installation failed after 10 attempts" >&2; \
+        exit 1; \
+      fi; \
       sleep 30; \
       i=$(expr $i - 1); \
     done && \
