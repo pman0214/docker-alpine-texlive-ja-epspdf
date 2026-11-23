@@ -5,7 +5,8 @@
 FROM alpine:3.19
 
 ARG GLIBC_VER=2.36
-ARG TEXLIVE_VER=2025
+ARG TEXLIVE_VER=2026
+ARG TEXLIVE_EXTRA=
 
 ENV LANG=C.UTF-8
 ENV GLIBC_URL_BASE=https://github.com/pman0214/docker-glibc-builder/releases/download
@@ -74,6 +75,7 @@ RUN set -x && \
         collection-fontsrecommended \
         collection-langjapanese \
         epstopdf \
+        ${TEXLIVE_EXTRA} \
         latexmk && break; \
       sleep 30; \
       i=$(expr $i - 1); \
